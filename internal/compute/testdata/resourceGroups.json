@@ -1,0 +1,16 @@
+{
+  "value": [
+    {
+      "id": "/subscriptions/SUB-UUID/resourceGroups/test-group",
+      "name": "test-group",
+      "type": "Microsoft.Resources/resourceGroups",
+      "location": "germanywestcentral",
+      "tags": {
+        "Abteilung": "Development"
+      },
+      "properties": {
+        "provisioningState": "Succeeded"
+      }
+    }
+  ]
+}

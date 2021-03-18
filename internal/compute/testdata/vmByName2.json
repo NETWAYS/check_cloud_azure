@@ -1,0 +1,167 @@
+{
+  "name": "test-vm2",
+  "id": "/subscriptions/SUB-UUID/resourceGroups/test-group/providers/Microsoft.Compute/virtualMachines/test-vm2",
+  "type": "Microsoft.Compute/virtualMachines",
+  "location": "germanywestcentral",
+  "tags": {
+    "Abteilung": "Development"
+  },
+  "identity": {
+    "type": "SystemAssigned",
+    "principalId": "da53d0f6-9014-4170-9c36-6d1f2f853a6d",
+    "tenantId": "TENANT-ID"
+  },
+  "properties": {
+    "vmId": "23c3287c-790f-4b9e-ba47-86a8974da5d8",
+    "hardwareProfile": {
+      "vmSize": "Standard_D2s_v3"
+    },
+    "storageProfile": {
+      "imageReference": {
+        "publisher": "Canonical",
+        "offer": "UbuntuServer",
+        "sku": "18.04-LTS",
+        "version": "latest",
+        "exactVersion": "18.04.202101290"
+      },
+      "osDisk": {
+        "osType": "Linux",
+        "name": "test-vm2_OsDisk_1_9e093d8f3f83462a8ae23d8951b62381",
+        "createOption": "FromImage",
+        "caching": "ReadWrite",
+        "managedDisk": {
+          "storageAccountType": "Standard_LRS",
+          "id": "/subscriptions/SUB-UUID/resourceGroups/test-group/providers/Microsoft.Compute/disks/test-vm2_OsDisk_1_9e093d8f3f83462a8ae23d8951b62381"
+        },
+        "diskSizeGB": 30
+      },
+      "dataDisks": []
+    },
+    "osProfile": {
+      "computerName": "test-vm2",
+      "adminUsername": "azureuser",
+      "linuxConfiguration": {
+        "disablePasswordAuthentication": true,
+        "ssh": {
+          "publicKeys": [
+            {
+              "path": "/home/azureuser/.ssh/authorized_keys",
+              "keyData": ""
+            }
+          ]
+        },
+        "provisionVMAgent": true,
+        "patchSettings": {
+          "patchMode": "ImageDefault"
+        }
+      },
+      "secrets": [],
+      "allowExtensionOperations": true,
+      "requireGuestProvisionSignal": true
+    },
+    "networkProfile": {
+      "networkInterfaces": [
+        {
+          "id": "/subscriptions/SUB-UUID/resourceGroups/test-group/providers/Microsoft.Network/networkInterfaces/test-vm2819"
+        }
+      ]
+    },
+    "diagnosticsProfile": {
+      "bootDiagnostics": {
+        "enabled": true
+      }
+    },
+    "provisioningState": "Succeeded",
+    "instanceView": {
+      "computerName": "test-vm2",
+      "osName": "ubuntu",
+      "osVersion": "18.04",
+      "vmAgent": {
+        "vmAgentVersion": "2.2.53.1",
+        "statuses": [
+          {
+            "code": "ProvisioningState/succeeded",
+            "level": "Info",
+            "displayStatus": "Ready",
+            "message": "Guest Agent is running",
+            "time": "2021-03-23T15:07:24+00:00"
+          }
+        ],
+        "extensionHandlers": [
+          {
+            "type": "Microsoft.Azure.NetworkWatcher.NetworkWatcherAgentLinux",
+            "typeHandlerVersion": "1.4.1654.1",
+            "status": {
+              "code": "ProvisioningState/succeeded",
+              "level": "Info",
+              "displayStatus": "Ready",
+              "message": "Plugin enabled"
+            }
+          }
+        ]
+      },
+      "disks": [
+        {
+          "name": "test-vm2_OsDisk_1_9e093d8f3f83462a8ae23d8951b62381",
+          "statuses": [
+            {
+              "code": "ProvisioningState/succeeded",
+              "level": "Info",
+              "displayStatus": "Provisioning succeeded",
+              "time": "2021-03-22T15:02:03.2414527+00:00"
+            }
+          ]
+        }
+      ],
+      "bootDiagnostics": {},
+      "extensions": [
+        {
+          "name": "AzureNetworkWatcherExtension",
+          "type": "Microsoft.Azure.NetworkWatcher.NetworkWatcherAgentLinux",
+          "typeHandlerVersion": "1.4.1654.1",
+          "statuses": [
+            {
+              "code": "ProvisioningState/succeeded",
+              "level": "Info",
+              "displayStatus": "Provisioning succeeded",
+              "message": "Default configuration is in effect."
+            }
+          ]
+        }
+      ],
+      "hyperVGeneration": "V1",
+      "statuses": [
+        {
+          "code": "ProvisioningState/succeeded",
+          "level": "Info",
+          "displayStatus": "Provisioning succeeded",
+          "time": "2021-03-22T15:02:59.6012298+00:00"
+        },
+        {
+          "code": "PowerState/running",
+          "level": "Info",
+          "displayStatus": "VM running"
+        }
+      ]
+    }
+  },
+  "zones": [
+    "1"
+  ],
+  "resources": [
+    {
+      "name": "AzureNetworkWatcherExtension",
+      "id": "/subscriptions/SUB-UUID/resourceGroups/test-group/providers/Microsoft.Compute/virtualMachines/test-vm2/extensions/AzureNetworkWatcherExtension",
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "location": "germanywestcentral",
+      "properties": {
+        "autoUpgradeMinorVersion": true,
+        "provisioningState": "Succeeded",
+        "publisher": "Microsoft.Azure.NetworkWatcher",
+        "type": "NetworkWatcherAgentLinux",
+        "typeHandlerVersion": "1.4",
+        "settings": {}
+      }
+    }
+  ]
+}

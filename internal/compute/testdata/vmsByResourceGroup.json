@@ -1,0 +1,169 @@
+{
+  "value": [
+    {
+      "name": "test-vm",
+      "id": "/subscriptions/SUB-UUID/resourceGroups/test-group/providers/Microsoft.Compute/virtualMachines/test-vm",
+      "type": "Microsoft.Compute/virtualMachines",
+      "location": "germanywestcentral",
+      "tags": {
+        "Abteilung": "Development"
+      },
+      "identity": {
+        "type": "SystemAssigned",
+        "principalId": "da53d0f6-9014-4170-9c36-6d1f2f853a6d",
+        "tenantId": "TENANT-ID"
+      },
+      "properties": {
+        "vmId": "23c3287c-790f-4b9e-ba47-86a8974da5d8",
+        "hardwareProfile": {
+          "vmSize": "Standard_D2s_v3"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "Canonical",
+            "offer": "UbuntuServer",
+            "sku": "18.04-LTS",
+            "version": "latest",
+            "exactVersion": "18.04.202101290"
+          },
+          "osDisk": {
+            "osType": "Linux",
+            "name": "test-vm_OsDisk_1_9e093d8f3f83462a8ae23d8951b62381",
+            "createOption": "FromImage",
+            "caching": "ReadWrite",
+            "managedDisk": {
+              "storageAccountType": "Standard_LRS",
+              "id": "/subscriptions/SUB-UUID/resourceGroups/test-group/providers/Microsoft.Compute/disks/test-vm_OsDisk_1_9e093d8f3f83462a8ae23d8951b62381"
+            },
+            "diskSizeGB": 30
+          },
+          "dataDisks": []
+        },
+        "osProfile": {
+          "computerName": "test-vm",
+          "adminUsername": "azureuser",
+          "linuxConfiguration": {
+            "disablePasswordAuthentication": true,
+            "ssh": {
+              "publicKeys": [
+                {
+                  "path": "/home/azureuser/.ssh/authorized_keys",
+                  "keyData": "" 
+                }
+              ]
+            },
+            "provisionVMAgent": true,
+            "patchSettings": {
+              "patchMode": "ImageDefault"
+            }
+          },
+          "secrets": [],
+          "allowExtensionOperations": true,
+          "requireGuestProvisionSignal": true
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "/subscriptions/SUB-UUID/resourceGroups/test-group/providers/Microsoft.Network/networkInterfaces/test-vm819"
+            }
+          ]
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true
+          }
+        },
+        "provisioningState": "Succeeded"
+      },
+      "zones": [
+        "1"
+      ],
+      "resources": [
+        {
+          "id": "/subscriptions/SUB-UUID/resourceGroups/test-group/providers/Microsoft.Compute/virtualMachines/test-vm/extensions/AzureNetworkWatcherExtension"
+        }
+      ]
+    },
+    {
+      "name": "test-vm2",
+      "id": "/subscriptions/SUB-UUID/resourceGroups/test-group/providers/Microsoft.Compute/virtualMachines/test-vm2",
+      "type": "Microsoft.Compute/virtualMachines",
+      "location": "germanywestcentral",
+      "tags": {
+        "Abteilung": "Development",
+        "Monitoring": "Metriken"
+      },
+      "properties": {
+        "vmId": "f250e19e-d85f-4307-be42-f02199cde5a9",
+        "hardwareProfile": {
+          "vmSize": "Standard_B1s"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "Canonical",
+            "offer": "UbuntuServer",
+            "sku": "18.04-LTS",
+            "version": "latest",
+            "exactVersion": "18.04.202102240"
+          },
+          "osDisk": {
+            "osType": "Linux",
+            "name": "test-vm2_OsDisk_1_50cee6f84bba44759a42ce54fe870775",
+            "createOption": "FromImage",
+            "caching": "ReadWrite",
+            "managedDisk": {
+              "id": "/subscriptions/SUB-UUID/resourceGroups/test-group/providers/Microsoft.Compute/disks/test-vm2_OsDisk_1_50cee6f84bba44759a42ce54fe870775"
+            }
+          },
+          "dataDisks": []
+        },
+        "osProfile": {
+          "computerName": "test-vm2",
+          "adminUsername": "azureuser",
+          "linuxConfiguration": {
+            "disablePasswordAuthentication": true,
+            "ssh": {
+              "publicKeys": [
+                {
+                  "path": "/home/azureuser/.ssh/authorized_keys",
+                  "keyData": "" 
+                }
+              ]
+            },
+            "provisionVMAgent": true,
+            "patchSettings": {
+              "patchMode": "ImageDefault"
+            }
+          },
+          "secrets": [],
+          "allowExtensionOperations": true,
+          "requireGuestProvisionSignal": true
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "/subscriptions/SUB-UUID/resourceGroups/test-group/providers/Microsoft.Network/networkInterfaces/test-vm2902"
+            }
+          ]
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true
+          }
+        },
+        "provisioningState": "Succeeded"
+      },
+      "zones": [
+        "1"
+      ],
+      "resources": [
+        {
+          "id": "/subscriptions/SUB-UUID/resourceGroups/test-group/providers/Microsoft.Compute/virtualMachines/test-vm2/extensions/LinuxDiagnostic"
+        },
+        {
+          "id": "/subscriptions/SUB-UUID/resourceGroups/test-group/providers/Microsoft.Compute/virtualMachines/test-vm2/extensions/NvidiaGpuDriverLinux"
+        }
+      ]
+    }
+  ]
+}
