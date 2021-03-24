@@ -19,7 +19,7 @@ var (
 var rootCmd = &cobra.Command{
 	Use:     "check_cloud_azure",
 	Short:   "Icinga check plugin to check Microsoft's Azure resources",
-	Version: version.Version,
+	Version: version.BuildVersion(),
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		go check.HandleTimeout(Timeout)
 
