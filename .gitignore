@@ -1,2 +1,4 @@
 .idea/
 Azure_*
+/dist/
+check_cloud_azure*

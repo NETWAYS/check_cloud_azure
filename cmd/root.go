@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/Azure/go-autorest/autorest"
 	"github.com/NETWAYS/check_cloud_azure/internal/common"
-	"github.com/NETWAYS/check_cloud_azure/version"
 	"github.com/NETWAYS/go-check"
 	"github.com/spf13/cobra"
 	"os"
@@ -17,9 +16,8 @@ var (
 )
 
 var rootCmd = &cobra.Command{
-	Use:     "check_cloud_azure",
-	Short:   "Icinga check plugin to check Microsoft's Azure resources",
-	Version: version.BuildVersion(),
+	Use:   "check_cloud_azure",
+	Short: "Icinga check plugin to check Microsoft's Azure resources",
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		go check.HandleTimeout(Timeout)
 
@@ -32,8 +30,10 @@ var rootCmd = &cobra.Command{
 	Run: Help,
 }
 
-func Execute() {
+func Execute(version string) {
 	defer check.CatchPanic()
+
+	rootCmd.Version = version
 
 	if err := rootCmd.Execute(); err != nil {
 		check.ExitError(err)
