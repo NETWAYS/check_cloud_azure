@@ -11,6 +11,7 @@ import (
 //
 // * Supporting Azure CLI for login
 // * Trying environment variables
+// nolint:nilerr
 func BuildAnyAuthorizer() (authorizer autorest.Authorizer, err error) {
 	authorizer, err = auth.NewAuthorizerFromFile(azure.PublicCloud.ResourceManagerEndpoint)
 	if err == nil {
@@ -28,5 +29,6 @@ func BuildAnyAuthorizer() (authorizer autorest.Authorizer, err error) {
 	}
 
 	err = fmt.Errorf("could not build an Azure authorizer: %w", err)
+
 	return
 }

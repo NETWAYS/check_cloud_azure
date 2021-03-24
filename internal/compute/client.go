@@ -102,9 +102,9 @@ func (c *Client) LoadVmsByResourceGroup(group string) (vms *VirtualMachines, err
 		}
 
 		if iter.Value().ID != nil {
-			name := *iter.Value().Name
 			var vmFull *VirtualMachine
-			vmFull, err = c.LoadVmByName(group, name)
+
+			vmFull, err = c.LoadVmByName(group, *iter.Value().Name)
 			if err != nil {
 				return
 			}

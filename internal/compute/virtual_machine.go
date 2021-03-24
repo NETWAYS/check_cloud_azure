@@ -53,14 +53,14 @@ func (v *VirtualMachine) GetStatus() int {
 	states[2] = LevelToState(agentLevel)
 
 	// https://docs.microsoft.com/en-us/dotnet/api/microsoft.azure.management.compute.fluent.powerstate?view=azure-dotnet#fields
-	switch state, level := v.GetPowerState(); level {
-	case compute.Info:
+	state, level := v.GetPowerState()
+	if level == compute.Info {
 		if state == "deallocated" {
 			states[1] = check.Critical
 		} else {
 			states[1] = check.OK
 		}
-	default:
+	} else {
 		states[1] = LevelToState(provLevel)
 	}
 

@@ -1,3 +1,4 @@
+// nolint:bodyclose
 package compute_test
 
 import (
@@ -36,6 +37,7 @@ func handleCredentials() {
 		if err != nil {
 			panic(err)
 		}
+
 		AzureAuthorizer = auth
 	} else {
 		AzureAuthorizer = autorest.NullAuthorizer{}

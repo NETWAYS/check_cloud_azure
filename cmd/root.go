@@ -45,11 +45,13 @@ func Help(cmd *cobra.Command, _ []string) {
 	fmt.Println()
 
 	_ = cmd.Usage()
+
 	os.Exit(3)
 }
 
 func RequireAuth() {
 	var err error
+
 	Authorizer, err = common.BuildAnyAuthorizer()
 	if err != nil {
 		check.ExitError(err)
