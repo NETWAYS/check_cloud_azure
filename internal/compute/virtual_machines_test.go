@@ -7,6 +7,7 @@ import (
 	"testing"
 )
 
+// nolint: bodyclose
 func TestVirtualMachines(t *testing.T) {
 	c, cleanup := testClientWithMock()
 	defer cleanup()

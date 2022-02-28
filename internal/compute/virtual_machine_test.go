@@ -6,6 +6,7 @@ import (
 	"testing"
 )
 
+// nolint: bodyclose
 func TestVirtualMachine(t *testing.T) {
 	c, cleanup := testClientWithMock()
 	defer cleanup()
@@ -29,6 +30,7 @@ func TestVirtualMachine(t *testing.T) {
 	assert.Contains(t, long, "Location: germanywestcentral")
 }
 
+// nolint: bodyclose
 func TestVirtualMachine_deallocated(t *testing.T) {
 	c, cleanup := testClientWithMock()
 	defer cleanup()
