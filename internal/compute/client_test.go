@@ -8,7 +8,6 @@ import (
 	"github.com/NETWAYS/go-check/http/mock"
 	"github.com/jarcoal/httpmock"
 	"github.com/stretchr/testify/assert"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"testing"
@@ -71,7 +70,7 @@ func withBaseURL(url string) string {
 
 func newJsonFileResponder(fileName string) func(request *http.Request) (*http.Response, error) {
 	return func(request *http.Request) (*http.Response, error) {
-		data, err := ioutil.ReadFile(fileName)
+		data, err := os.ReadFile(fileName)
 		if err != nil {
 			return nil, err
 		}
