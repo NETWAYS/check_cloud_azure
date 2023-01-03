@@ -10,7 +10,7 @@ require (
 	github.com/Azure/go-autorest/autorest/validation v0.3.1 // indirect
 	github.com/NETWAYS/go-check v0.3.0
 	github.com/golang-jwt/jwt/v4 v4.3.0 // indirect
-	github.com/jarcoal/httpmock v1.1.0
+	github.com/jarcoal/httpmock v1.2.0
 	github.com/kr/pretty v0.2.0 // indirect
 	github.com/spf13/cobra v1.6.1
 	github.com/stretchr/testify v1.8.1
