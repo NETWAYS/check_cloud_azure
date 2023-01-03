@@ -3,7 +3,7 @@ module github.com/NETWAYS/check_cloud_azure
 go 1.14
 
 require (
-	github.com/Azure/azure-sdk-for-go v63.3.0+incompatible
+	github.com/Azure/azure-sdk-for-go v67.2.0+incompatible
 	github.com/Azure/go-autorest/autorest v0.11.28
 	github.com/Azure/go-autorest/autorest/azure/auth v0.5.11
 	github.com/Azure/go-autorest/autorest/to v0.4.0 // indirect
