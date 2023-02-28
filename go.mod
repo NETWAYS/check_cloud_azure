@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/Azure/azure-sdk-for-go v63.3.0+incompatible
 	github.com/Azure/go-autorest/autorest v0.11.28
-	github.com/Azure/go-autorest/autorest/azure/auth v0.5.11
+	github.com/Azure/go-autorest/autorest/azure/auth v0.5.12
 	github.com/NETWAYS/go-check v0.3.0
 	github.com/jarcoal/httpmock v1.3.0
 	github.com/spf13/cobra v1.6.1
