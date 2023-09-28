@@ -9,7 +9,6 @@ import (
 	"github.com/Azure/go-autorest/autorest"
 	"github.com/NETWAYS/check_cloud_azure/internal/common"
 	"github.com/NETWAYS/check_cloud_azure/internal/compute"
-	"github.com/NETWAYS/go-check-network/http/mock"
 	"github.com/jarcoal/httpmock"
 	"github.com/stretchr/testify/assert"
 )
@@ -59,8 +58,6 @@ func testClientWithMock() (client *compute.Client, cleanup func()) {
 
 	httpmock.Activate()
 	cleanup = httpmock.DeactivateAndReset
-
-	checkhttpmock.ActivateRecorder()
 
 	return
 }
