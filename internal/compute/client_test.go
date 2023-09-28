@@ -2,15 +2,16 @@
 package compute_test
 
 import (
-	"github.com/Azure/go-autorest/autorest"
-	"github.com/NETWAYS/check_cloud_azure/internal/common"
-	"github.com/NETWAYS/check_cloud_azure/internal/compute"
-	"github.com/NETWAYS/go-check/http/mock"
-	"github.com/jarcoal/httpmock"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"os"
 	"testing"
+
+	"github.com/Azure/go-autorest/autorest"
+	"github.com/NETWAYS/check_cloud_azure/internal/common"
+	"github.com/NETWAYS/check_cloud_azure/internal/compute"
+	"github.com/NETWAYS/go-check-network/http/mock"
+	"github.com/jarcoal/httpmock"
+	"github.com/stretchr/testify/assert"
 )
 
 var (
