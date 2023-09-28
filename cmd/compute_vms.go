@@ -80,7 +80,7 @@ var computeVmsCmd = &cobra.Command{
 			summary += fmt.Sprintf(" - %d %s", count, state)
 		}
 
-		check.Exit(overallStatus, summary+"\n"+output)
+		check.ExitRaw(overallStatus, summary+"\n"+output)
 	},
 }
 

@@ -35,7 +35,7 @@ var computeVmCmd = &cobra.Command{
 		output := vm.GetOutput()
 		output += "\n\n" + vm.GetLongOutput()
 
-		check.Exit(vm.GetStatus(), output)
+		check.ExitRaw(vm.GetStatus(), output)
 	},
 }
 
