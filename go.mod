@@ -6,8 +6,7 @@ require (
 	github.com/Azure/azure-sdk-for-go v63.3.0+incompatible
 	github.com/Azure/go-autorest/autorest v0.11.29
 	github.com/Azure/go-autorest/autorest/azure/auth v0.5.12
-	github.com/NETWAYS/go-check v0.5.0
-	github.com/NETWAYS/go-check-network/http v0.0.0-20230928080609-57070f836e41
+	github.com/NETWAYS/go-check v0.6.0
 	github.com/jarcoal/httpmock v1.3.1
 	github.com/spf13/cobra v1.7.0
 	github.com/stretchr/testify v1.8.4
