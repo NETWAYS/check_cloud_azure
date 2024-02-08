@@ -3,117 +3,126 @@ package compute
 import (
 	"context"
 	"fmt"
-	"github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2020-06-01/compute"
-	"github.com/Azure/azure-sdk-for-go/services/resources/mgmt/2020-10-01/resources"
-	"github.com/Azure/go-autorest/autorest"
+
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
+	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/compute/armcompute"
+	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/resources/armresources"
 )
 
 type Client struct {
-	Authorizer     autorest.Authorizer
+	Token          azcore.TokenCredential
 	SubscriptionID string
-	VMClient       *compute.VirtualMachinesClient
-	GroupClient    *resources.GroupsClient
+	VMClient       *armcompute.VirtualMachinesClient
+	GroupClient    *armresources.ResourceGroupsClient
 	Context        context.Context
 }
 
-func NewClient(authorizer autorest.Authorizer, subscriptionId string) *Client {
+func NewClient(token azcore.TokenCredential, subscriptionId string) *Client {
 	return &Client{
-		Authorizer:     authorizer,
+		Token:          token,
 		SubscriptionID: subscriptionId,
 		Context:        context.Background(),
 	}
 }
 
-func (c *Client) GetVMClient() *compute.VirtualMachinesClient {
+func (c *Client) GetVMClient(cred azcore.TokenCredential) (*armcompute.VirtualMachinesClient, error) {
 	if c.VMClient == nil {
-		client := compute.NewVirtualMachinesClient(c.SubscriptionID)
-		client.Authorizer = c.Authorizer
-		c.VMClient = &client
+		client, err := armcompute.NewVirtualMachinesClient(c.SubscriptionID, cred, nil)
+		if err != nil {
+			return client, err
+		}
+		c.VMClient = client
 	}
 
-	return c.VMClient
+	return c.VMClient, nil
 }
 
-func (c *Client) LoadVmByName(groupName string, vmName string) (vm *VirtualMachine, err error) {
-	local, err := c.GetVMClient().Get(c.Context, groupName, vmName, compute.InstanceView)
+func (c *Client) LoadVmByName(groupName string, vmName string) (*VirtualMachine, error) {
+	local, err := c.VMClient.Get(c.Context, groupName, vmName, nil)
 	if err != nil {
 		err = fmt.Errorf("could not load vm '%s': %w", vmName, err)
-		return
+		return nil, err
 	}
 
-	vm = &VirtualMachine{VirtualMachine: &local}
+	result := VirtualMachine{
+		VirtualMachine: &local.VirtualMachine,
+	}
 
-	return
+	return &result, nil
 }
 
-func (c *Client) GetGroupClient() *resources.GroupsClient {
+func (c *Client) GetGroupClient() *armresources.ResourceGroupsClient {
 	if c.GroupClient == nil {
-		client := resources.NewGroupsClient(c.SubscriptionID)
-		client.Authorizer = c.Authorizer
-		c.GroupClient = &client
+
+		resourcesClientFactory, err := armresources.NewClientFactory(c.SubscriptionID, c.Token, nil)
+		if err != nil {
+			return nil
+		}
+		resourceGroupClient := resourcesClientFactory.NewResourceGroupsClient()
+
+		c.GroupClient = resourceGroupClient
 	}
 
 	return c.GroupClient
 }
 
-func (c *Client) LoadResourceGroup(name string) (group resources.Group, err error) {
-	group, err = c.GetGroupClient().Get(c.Context, name)
+func (c *Client) LoadResourceGroup(name string) (armresources.ResourceGroup, error) {
+	groupResponse, err := c.GetGroupClient().Get(c.Context, name, nil)
 	if err != nil {
 		err = fmt.Errorf("could not load group '%s': %w", name, err)
+		return armresources.ResourceGroup{}, err
 	}
 
-	return
+	return groupResponse.ResourceGroup, nil
+
 }
 
-func (c *Client) LoadResourceGroupsByFilter(name, value string) (groups []resources.Group, err error) {
-	iter, err := c.GetGroupClient().ListComplete(c.Context, createFilter(name, value), nil)
-	if err != nil {
-		err = fmt.Errorf("could not load resource group: %w", err)
-		return
-	}
+func (c *Client) LoadResourceGroupsByFilter(name, value string) ([]armresources.ResourceGroup, error) {
+	pager := c.GetGroupClient().NewListPager(nil)
 
-	for ; iter.NotDone(); err = iter.NextWithContext(c.Context) {
+	result := []armresources.ResourceGroup{}
+
+	for pager.More() {
+		nextPage, err := pager.NextPage(c.Context)
 		if err != nil {
-			err = fmt.Errorf("could not load resource group: %w", err)
-			return
+			return nil, err
 		}
 
-		if iter.Value().ID != nil {
-			groups = append(groups, iter.Value())
-		}
-	}
+		for _, resGrp := range nextPage.Value {
+			val, ok := resGrp.Tags[name]
 
-	return
-}
-
-func (c *Client) LoadVmsByResourceGroup(group string) (vms *VirtualMachines, err error) {
-	vms = &VirtualMachines{}
-
-	iter, err := c.GetVMClient().ListComplete(c.Context, group)
-	if err != nil {
-		err = fmt.Errorf("could not load virtual machines by group: %w", err)
-		return
-	}
-
-	for ; iter.NotDone(); err = iter.NextWithContext(c.Context) {
-		if err != nil {
-			err = fmt.Errorf("could not load virtual machines by group: %w", err)
-			return
-		}
-
-		if iter.Value().ID != nil {
-			var vmFull *VirtualMachine
-
-			vmFull, err = c.LoadVmByName(group, *iter.Value().Name)
-			if err != nil {
-				return
+			if ok && *val == value {
+				result = append(result, *resGrp)
 			}
-
-			vms.VirtualMachines = append(vms.VirtualMachines, vmFull)
 		}
+
 	}
 
-	return
+	return result, nil
+}
+
+func (c *Client) LoadVmsByResourceGroup(group string) (*VirtualMachines, error) {
+	vms := &VirtualMachines{}
+
+	pager := c.VMClient.NewListPager(group, nil)
+
+	for pager.More() {
+
+		nextPage, err := pager.NextPage(c.Context)
+		if err != nil {
+			return nil, err
+		}
+
+		for _, vm := range nextPage.VirtualMachineListResult.Value {
+			tmp := VirtualMachine{
+				VirtualMachine: vm,
+			}
+			vms.VirtualMachines = append(vms.VirtualMachines, &tmp)
+		}
+
+	}
+
+	return vms, nil
 }
 
 func createFilter(name, value string) string {

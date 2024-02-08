@@ -2,14 +2,15 @@ package compute
 
 import (
 	"fmt"
-	"github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2020-06-01/compute"
+	"strings"
+
+	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/compute/armcompute"
 	"github.com/NETWAYS/go-check"
 	"github.com/NETWAYS/go-check/result"
-	"strings"
 )
 
 type VirtualMachine struct {
-	VirtualMachine *compute.VirtualMachine
+	VirtualMachine *armcompute.VirtualMachine
 }
 
 func (v *VirtualMachine) GetOutput() (out string) {
@@ -26,7 +27,7 @@ func (v *VirtualMachine) GetOutput() (out string) {
 }
 
 func (v *VirtualMachine) GetLongOutput() (out string) {
-	out += fmt.Sprintf("Size: %s\n", v.VirtualMachine.HardwareProfile.VMSize)
+	out += fmt.Sprintf("Size: %s\n", *v.VirtualMachine.Properties.HardwareProfile.VMSize)
 	out += "Location: " + *v.VirtualMachine.Location + "\n"
 
 	/* Maybe helpful later
@@ -54,7 +55,7 @@ func (v *VirtualMachine) GetStatus() int {
 
 	// https://docs.microsoft.com/en-us/dotnet/api/microsoft.azure.management.compute.fluent.powerstate?view=azure-dotnet#fields
 	state, level := v.GetPowerState()
-	if level == compute.Info {
+	if level == armcompute.StatusLevelTypesInfo {
 		if state == "deallocated" {
 			states[1] = check.Critical
 		} else {
@@ -67,34 +68,34 @@ func (v *VirtualMachine) GetStatus() int {
 	return result.WorstState(states...)
 }
 
-func (v *VirtualMachine) GetPowerState() (string, compute.StatusLevelTypes) {
-	for _, state := range *v.VirtualMachine.InstanceView.Statuses {
+func (v *VirtualMachine) GetPowerState() (string, armcompute.StatusLevelTypes) {
+	for _, state := range v.VirtualMachine.Properties.InstanceView.Statuses {
 		if strings.HasPrefix(*state.Code, "PowerState/") {
-			return strings.SplitN(*state.Code, "/", 2)[1], state.Level
+			return strings.SplitN(*state.Code, "/", 2)[1], *state.Level
 		}
 	}
 
 	return "", ""
 }
 
-func (v *VirtualMachine) GetProvisioningState() (string, compute.StatusLevelTypes) {
-	for _, state := range *v.VirtualMachine.InstanceView.Statuses {
+func (v *VirtualMachine) GetProvisioningState() (string, armcompute.StatusLevelTypes) {
+	for _, state := range v.VirtualMachine.Properties.InstanceView.Statuses {
 		if strings.HasPrefix(*state.Code, "ProvisioningState/") {
-			return strings.SplitN(*state.Code, "/", 2)[1], state.Level
+			return strings.SplitN(*state.Code, "/", 2)[1], *state.Level
 		}
 	}
 
 	return "", ""
 }
 
-func (v *VirtualMachine) GetAgentProvisioningState() (string, compute.StatusLevelTypes) {
-	if v.VirtualMachine.InstanceView.VMAgent == nil {
-		return "(none)", compute.Error
+func (v *VirtualMachine) GetAgentProvisioningState() (string, armcompute.StatusLevelTypes) {
+	if v.VirtualMachine.Properties.InstanceView.VMAgent == nil {
+		return "(none)", armcompute.StatusLevelTypesError
 	}
 
-	for _, state := range *v.VirtualMachine.InstanceView.VMAgent.Statuses {
+	for _, state := range v.VirtualMachine.Properties.InstanceView.VMAgent.Statuses {
 		if strings.HasPrefix(*state.Code, "ProvisioningState/") {
-			return strings.SplitN(*state.Code, "/", 2)[1], state.Level
+			return strings.SplitN(*state.Code, "/", 2)[1], *state.Level
 		}
 	}
 

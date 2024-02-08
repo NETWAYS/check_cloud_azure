@@ -2,7 +2,8 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/Azure/azure-sdk-for-go/services/resources/mgmt/2020-10-01/resources"
+
+	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/resources/armresources"
 	"github.com/NETWAYS/go-check"
 	"github.com/NETWAYS/go-check/result"
 	"github.com/spf13/cobra"
@@ -25,18 +26,18 @@ var computeVmsCmd = &cobra.Command{
 			total         int
 			counters      = map[string]int{}
 			output        string
-			groups        []resources.Group
+			groups        []armresources.ResourceGroup
 		)
 
 		if ResGroup != "" {
-			var group resources.Group
+			var group armresources.ResourceGroup
 
 			group, err = ComputeClient.LoadResourceGroup(ResGroup)
 			if err != nil {
 				check.ExitError(err)
 			}
 
-			groups = []resources.Group{group}
+			groups = []armresources.ResourceGroup{group}
 		} else {
 			groups, err = ComputeClient.LoadResourceGroupsByFilter(TagName, TagValue)
 			if err != nil {

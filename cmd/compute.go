@@ -2,11 +2,13 @@ package cmd
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/Azure/go-autorest/autorest/azure/auth"
+	"github.com/NETWAYS/check_cloud_azure/internal/common"
 	"github.com/NETWAYS/check_cloud_azure/internal/compute"
 	"github.com/NETWAYS/go-check"
 	"github.com/spf13/cobra"
-	"os"
 )
 
 var (
@@ -21,8 +23,6 @@ var computeCmd = &cobra.Command{
 }
 
 func RequireComputeClient() {
-	RequireAuth()
-
 	// Lookup environment or auth-file for subscription
 	if sub := os.Getenv("AZURE_SUBSCRIPTION_ID"); sub != "" {
 		Subscription = sub
@@ -36,7 +36,12 @@ func RequireComputeClient() {
 		check.ExitError(fmt.Errorf("please specify Azure subscription id"))
 	}
 
-	ComputeClient = compute.NewClient(Authorizer, Subscription)
+	token, err := common.CreateCredential(Config)
+	if err != nil {
+		check.ExitError(fmt.Errorf("Failed to create token"))
+	}
+
+	ComputeClient = compute.NewClient(token, Subscription)
 }
 
 func init() {
