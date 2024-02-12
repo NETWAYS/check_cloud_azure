@@ -1,9 +1,11 @@
 package compute_test
 
 import (
+	"testing"
+
 	"github.com/jarcoal/httpmock"
 	"github.com/stretchr/testify/assert"
-	"testing"
+	"github.com/stretchr/testify/require"
 )
 
 // nolint: bodyclose
@@ -16,7 +18,7 @@ func TestVirtualMachine(t *testing.T) {
 		newJsonFileResponder("./testdata/vmByName.json"))
 
 	vm, err := c.LoadVmByName("test-group", "test-vm")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	assert.Equal(t, 0, vm.GetStatus())
 
@@ -40,7 +42,7 @@ func TestVirtualMachine_deallocated(t *testing.T) {
 		newJsonFileResponder("./testdata/vmByName-deallocated.json"))
 
 	vm, err := c.LoadVmByName("test-group", "test-vm2")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	assert.Equal(t, 2, vm.GetStatus())
 

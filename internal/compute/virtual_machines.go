@@ -1,7 +1,6 @@
 package compute
 
 import (
-	"fmt"
 	"github.com/NETWAYS/go-check"
 	"github.com/NETWAYS/go-check/result"
 )
@@ -10,30 +9,20 @@ type VirtualMachines struct {
 	VirtualMachines []*VirtualMachine
 }
 
-func (m VirtualMachines) GetStatus() int {
+func (m *VirtualMachines) GetPartialResult() result.PartialResult {
+	result := result.PartialResult{}
+	result.SetDefaultState(check.Unknown)
+
 	if m.IsEmpty() {
-		return check.Critical
+		result.Output = "no VMs found"
+		return result
 	}
 
-	var states []int
-
-	for _, vm := range m.VirtualMachines {
-		states = append(states, vm.GetStatus())
+	for idx := range m.VirtualMachines {
+		result.AddSubcheck(m.VirtualMachines[idx].GetPartialResult())
 	}
 
-	return result.WorstState(states...)
-}
-
-func (m VirtualMachines) GetOutput() (output string) {
-	if m.IsEmpty() {
-		return "no VMs found"
-	}
-
-	for _, vm := range m.VirtualMachines {
-		output += fmt.Sprintf("[%s] %s\n", check.StatusText(vm.GetStatus()), vm.GetOutput())
-	}
-
-	return
+	return result
 }
 
 func (m VirtualMachines) IsEmpty() bool {

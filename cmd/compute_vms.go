@@ -18,28 +18,27 @@ var computeVmsCmd = &cobra.Command{
 	Use:   "vms",
 	Short: "Checks multiple Azure VMs in a resource group",
 	Run: func(cmd *cobra.Command, args []string) {
-		RequireComputeClient()
+		client, err := GenerateComputeClient(Config)
+		if err != nil {
+			check.ExitError(err)
+		}
 
 		var (
-			err           error
-			overallStatus int
-			total         int
-			counters      = map[string]int{}
-			output        string
-			groups        []armresources.ResourceGroup
+			groups []armresources.ResourceGroup
 		)
 
+		// Load the ressource groups first
 		if ResGroup != "" {
 			var group armresources.ResourceGroup
 
-			group, err = ComputeClient.LoadResourceGroup(ResGroup)
+			group, err = client.LoadResourceGroup(ResGroup)
 			if err != nil {
 				check.ExitError(err)
 			}
 
 			groups = []armresources.ResourceGroup{group}
 		} else {
-			groups, err = ComputeClient.LoadResourceGroupsByFilter(TagName, TagValue)
+			groups, err = client.LoadResourceGroupsByFilter(TagName, TagValue)
 			if err != nil {
 				check.ExitError(fmt.Errorf("could not load resource groups: %w", err))
 			} else if len(groups) == 0 {
@@ -47,41 +46,23 @@ var computeVmsCmd = &cobra.Command{
 			}
 		}
 
+		overall := result.Overall{}
+
+		// Iterate through groups
+		// Load all VMs for each group
+		// Build one result state from that
 		for _, group := range groups {
-			vms, err := ComputeClient.LoadVmsByResourceGroup(*group.Name)
+			vms, err := client.LoadVmsByResourceGroup(*group.Name)
 			if err != nil {
 				check.ExitError(err)
 			}
 
-			if vms.IsEmpty() {
-				// TODO: should this be a failure?
-				continue
-			}
+			groupPartial := vms.GetPartialResult()
+			groupPartial.Output += "Group: " + *group.Name
 
-			output += "\n## Group: " + *group.Name + "\n\n"
-
-			overallStatus = result.WorstState(overallStatus, vms.GetStatus())
-			output += vms.GetOutput()
-
-			for _, vm := range vms.VirtualMachines {
-				power, _ := vm.GetPowerState()
-				counters[power] += 1
-			}
-
-			total++
+			overall.AddSubcheck(groupPartial)
 		}
-
-		summary := fmt.Sprintf("%d VMs found", total)
-
-		if total == 0 {
-			overallStatus = check.Unknown
-		}
-
-		for state, count := range counters {
-			summary += fmt.Sprintf(" - %d %s", count, state)
-		}
-
-		check.ExitRaw(overallStatus, summary+"\n"+output)
+		check.ExitRaw(overall.GetStatus(), overall.GetOutput())
 	},
 }
 

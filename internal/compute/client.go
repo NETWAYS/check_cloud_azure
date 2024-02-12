@@ -31,6 +31,7 @@ func (c *Client) GetVMClient(cred azcore.TokenCredential) (*armcompute.VirtualMa
 		if err != nil {
 			return client, err
 		}
+
 		c.VMClient = client
 	}
 
@@ -38,7 +39,9 @@ func (c *Client) GetVMClient(cred azcore.TokenCredential) (*armcompute.VirtualMa
 }
 
 func (c *Client) LoadVmByName(groupName string, vmName string) (*VirtualMachine, error) {
+	fmt.Printf("%v\n", c.VMClient)
 	local, err := c.VMClient.Get(c.Context, groupName, vmName, nil)
+
 	if err != nil {
 		err = fmt.Errorf("could not load vm '%s': %w", vmName, err)
 		return nil, err
@@ -53,13 +56,12 @@ func (c *Client) LoadVmByName(groupName string, vmName string) (*VirtualMachine,
 
 func (c *Client) GetGroupClient() *armresources.ResourceGroupsClient {
 	if c.GroupClient == nil {
-
 		resourcesClientFactory, err := armresources.NewClientFactory(c.SubscriptionID, c.Token, nil)
 		if err != nil {
 			return nil
 		}
-		resourceGroupClient := resourcesClientFactory.NewResourceGroupsClient()
 
+		resourceGroupClient := resourcesClientFactory.NewResourceGroupsClient()
 		c.GroupClient = resourceGroupClient
 	}
 
@@ -74,12 +76,10 @@ func (c *Client) LoadResourceGroup(name string) (armresources.ResourceGroup, err
 	}
 
 	return groupResponse.ResourceGroup, nil
-
 }
 
 func (c *Client) LoadResourceGroupsByFilter(name, value string) ([]armresources.ResourceGroup, error) {
 	pager := c.GetGroupClient().NewListPager(nil)
-
 	result := []armresources.ResourceGroup{}
 
 	for pager.More() {
@@ -95,7 +95,6 @@ func (c *Client) LoadResourceGroupsByFilter(name, value string) ([]armresources.
 				result = append(result, *resGrp)
 			}
 		}
-
 	}
 
 	return result, nil
@@ -103,11 +102,9 @@ func (c *Client) LoadResourceGroupsByFilter(name, value string) ([]armresources.
 
 func (c *Client) LoadVmsByResourceGroup(group string) (*VirtualMachines, error) {
 	vms := &VirtualMachines{}
-
 	pager := c.VMClient.NewListPager(group, nil)
 
 	for pager.More() {
-
 		nextPage, err := pager.NextPage(c.Context)
 		if err != nil {
 			return nil, err
@@ -119,17 +116,7 @@ func (c *Client) LoadVmsByResourceGroup(group string) (*VirtualMachines, error) 
 			}
 			vms.VirtualMachines = append(vms.VirtualMachines, &tmp)
 		}
-
 	}
 
 	return vms, nil
-}
-
-func createFilter(name, value string) string {
-	// $filter=tagName eq 'tag1' and tagValue eq 'Value1'
-	if name == "" && value == "" {
-		return ""
-	} else {
-		return fmt.Sprintf("tagName eq '%s' and tagValue eq '%s'", name, value)
-	}
 }

@@ -1,19 +1,13 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
-	"os"
 
-	"github.com/Azure/go-autorest/autorest/azure/auth"
 	"github.com/NETWAYS/check_cloud_azure/internal/common"
 	"github.com/NETWAYS/check_cloud_azure/internal/compute"
 	"github.com/NETWAYS/go-check"
 	"github.com/spf13/cobra"
-)
-
-var (
-	Subscription  string
-	ComputeClient *compute.Client
 )
 
 var computeCmd = &cobra.Command{
@@ -22,18 +16,10 @@ var computeCmd = &cobra.Command{
 	Run:   Help,
 }
 
-func RequireComputeClient() {
-	// Lookup environment or auth-file for subscription
-	if sub := os.Getenv("AZURE_SUBSCRIPTION_ID"); sub != "" {
-		Subscription = sub
-	} else if settings, err := auth.GetSettingsFromFile(); err == nil {
-		if sub, ok := settings.Values["AZURE_SUBSCRIPTION_ID"]; ok {
-			Subscription = sub
-		}
-	}
-
-	if Subscription == "" {
-		check.ExitError(fmt.Errorf("please specify Azure subscription id"))
+func GenerateComputeClient(config common.Config) (*compute.Client, error) {
+	if Config.SubscriptionID == "" {
+		retError := errors.New("Subscription is missing")
+		return nil, retError
 	}
 
 	token, err := common.CreateCredential(Config)
@@ -41,10 +27,17 @@ func RequireComputeClient() {
 		check.ExitError(fmt.Errorf("Failed to create token"))
 	}
 
-	ComputeClient = compute.NewClient(token, Subscription)
+	client := compute.NewClient(token, Config.SubscriptionID)
+
+	client.VMClient, err = client.GetVMClient(token)
+	if err != nil {
+		check.ExitError(fmt.Errorf("Failed to create VMClient"))
+	}
+
+	return client, nil
 }
 
 func init() {
 	p := computeCmd.PersistentFlags()
-	p.StringVarP(&Subscription, "sub", "s", Subscription, "Azure Subscription ID (env:AZURE_SUBSCRIPTION_ID)")
+	p.StringVarP(&Config.SubscriptionID, "sub", "s", "", "Azure Subscription ID")
 }

@@ -13,6 +13,16 @@ type VirtualMachine struct {
 	VirtualMachine *armcompute.VirtualMachine
 }
 
+func (v *VirtualMachine) GetPartialResult() result.PartialResult {
+	result := result.PartialResult{}
+
+	result.SetState(v.GetStatus())
+
+	result.Output = v.GetOutput() + "\n\n" + v.GetLongOutput()
+
+	return result
+}
+
 func (v *VirtualMachine) GetOutput() (out string) {
 	instance := v.VirtualMachine
 
@@ -43,7 +53,11 @@ func (v *VirtualMachine) GetLongOutput() (out string) {
 }
 
 func (v *VirtualMachine) GetStatus() int {
-	states := []int{3, 3, 3}
+	states := []int{
+		check.Unknown,
+		check.Unknown,
+		check.Unknown,
+	}
 
 	// field Level StatusLevelTypes`json:"level,omitempty"` of InstanceViewStatus type
 	// Level - The level code. Possible values include: 'Info', 'Warning', 'Error'

@@ -6,55 +6,20 @@ import (
 	"os"
 	"testing"
 
-	"github.com/Azure/go-autorest/autorest"
-	"github.com/NETWAYS/check_cloud_azure/internal/common"
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
 	"github.com/NETWAYS/check_cloud_azure/internal/compute"
 	"github.com/jarcoal/httpmock"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 var (
-	AzureAuthorizer     autorest.Authorizer
+	AzureToken          azcore.TokenCredential
 	AzureSubscriptionId = "SUB-UUID"
 )
 
-// allowMocking reconfigures an autorest.Client to not retry and use a basic autorest.Sender implementation
-//
-// This is required to override any internal transports, so the normal http.DefaultClient is used, and httpmock
-// can engage.
-func allowMocking(c *autorest.Client) {
-	// Disable retry logic to avoid blocking on errors
-	c.RetryAttempts = 1
-	c.RetryDuration = 1
-
-	c.Sender = http.DefaultClient
-}
-
-func handleCredentials() {
-	if os.Getenv("AZURE_TENANT_ID") != "" {
-		auth, err := common.BuildAnyAuthorizer()
-		if err != nil {
-			panic(err)
-		}
-
-		AzureAuthorizer = auth
-	} else {
-		AzureAuthorizer = autorest.NullAuthorizer{}
-	}
-
-	if subEnv := os.Getenv("AZURE_SUBSCRIPTION_ID"); subEnv != "" {
-		AzureSubscriptionId = subEnv
-	}
-}
-
 func testClientWithMock() (client *compute.Client, cleanup func()) {
-	handleCredentials()
-
-	client = compute.NewClient(AzureAuthorizer, AzureSubscriptionId)
-
-	// Reconfigure clients to use a basic http.Client implementation
-	allowMocking(&client.GetVMClient().BaseClient.Client)
-	allowMocking(&client.GetGroupClient().BaseClient.Client)
+	client = compute.NewClient(AzureToken, AzureSubscriptionId)
 
 	httpmock.Activate()
 	cleanup = httpmock.DeactivateAndReset
@@ -86,7 +51,7 @@ func TestClient_LoadVmByName(t *testing.T) {
 		newJsonFileResponder("./testdata/vmByName.json"))
 
 	vm, err := c.LoadVmByName("test-group", "test-vm")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, "test-vm", *vm.VirtualMachine.Name)
 }
 
@@ -99,7 +64,7 @@ func TestClient_LoadResourceGroup(t *testing.T) {
 		newJsonFileResponder("./testdata/resourceGroup.json"))
 
 	r, err := c.LoadResourceGroup("test-group")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, "test-group", *r.Name)
 }
 
@@ -112,7 +77,7 @@ func TestClient_LoadResourceGroupsByFilter(t *testing.T) {
 		newJsonFileResponder("./testdata/resourceGroups.json"))
 
 	groups, err := c.LoadResourceGroupsByFilter("Abteilung", "Development")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Len(t, groups, 1)
 	assert.Equal(t, "test-group", *groups[0].Name)
 
@@ -121,7 +86,7 @@ func TestClient_LoadResourceGroupsByFilter(t *testing.T) {
 		newJsonFileResponder("./testdata/resourceGroups.json"))
 
 	groups, err = c.LoadResourceGroupsByFilter("", "")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Len(t, groups, 1)
 	assert.Equal(t, "test-group", *groups[0].Name)
 }
@@ -143,7 +108,7 @@ func TestClient_LoadVmsByResourceGroup(t *testing.T) {
 		newJsonFileResponder("./testdata/vmByName2.json"))
 
 	vms, err := c.LoadVmsByResourceGroup("test-group")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Len(t, vms.VirtualMachines, 2)
 	assert.Equal(t, "test-vm", *vms.VirtualMachines[0].VirtualMachine.Name)
 	assert.Equal(t, "test-vm2", *vms.VirtualMachines[1].VirtualMachine.Name)

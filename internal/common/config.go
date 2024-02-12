@@ -6,9 +6,10 @@ import (
 )
 
 type Config struct {
-	TenantID     string
-	ClientID     string
-	ClientSecret string
+	TenantID       string
+	ClientID       string
+	ClientSecret   string
+	SubscriptionID string
 }
 
 func CreateCredential(conf Config) (azcore.TokenCredential, error) {

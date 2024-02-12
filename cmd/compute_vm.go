@@ -3,8 +3,8 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/NETWAYS/check_cloud_azure/internal/compute"
 	"github.com/NETWAYS/go-check"
+	"github.com/NETWAYS/go-check/result"
 	"github.com/spf13/cobra"
 )
 
@@ -17,27 +17,27 @@ var computeVmCmd = &cobra.Command{
 	Use:   "vm",
 	Short: "Checks a single Azure VM",
 	Run: func(cmd *cobra.Command, args []string) {
-		RequireComputeClient()
 
-		var (
-			vm  *compute.VirtualMachine
-			err error
-		)
+		client, err := GenerateComputeClient(Config)
+		if err != nil {
+			check.ExitError(err)
+		}
 
-		if VmName != "" && ResGroup != "" {
-			vm, err = ComputeClient.LoadVmByName(ResGroup, VmName)
-			if err != nil {
-				check.ExitError(fmt.Errorf("could not load vm: %w", err))
-			}
-
-		} else {
+		if VmName == "" || ResGroup == "" {
 			check.ExitError(fmt.Errorf("please specify the name and resource group of the VM"))
 		}
 
-		output := vm.GetOutput()
-		output += "\n\n" + vm.GetLongOutput()
+		vm, err := client.LoadVmByName(ResGroup, VmName)
+		if err != nil {
+			check.ExitError(fmt.Errorf("could not load vm: %w", err))
+		}
 
-		check.ExitRaw(vm.GetStatus(), output)
+		overall := result.Overall{}
+		sc := vm.GetPartialResult()
+
+		overall.AddSubcheck(sc)
+
+		check.ExitRaw(overall.GetStatus(), overall.GetOutput())
 	},
 }
 
