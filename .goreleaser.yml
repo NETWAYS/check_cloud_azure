@@ -1,4 +1,5 @@
 # See documentation at https://goreleaser.com
+version: 2
 before:
   hooks:
     - go mod download
@@ -22,11 +23,12 @@ release:
     name: check_cloud_azure
 archives:
   - format: binary
-    replacements:
-      darwin: Darwin
-      linux: Linux
-      windows: Windows
-      amd64: x86_64
+    name_template: >-
+      {{ .ProjectName }}_{{ .Tag }}_
+      {{- if eq .Os "linux" }}Linux{{ end }}
+      {{- if eq .Os "windows" }}Windows{{ end }}
+      {{- if eq .Os "darwin" }}Darwin{{ end }}
+      {{- if eq .Arch "amd64" }}_x86_64{{ end }}
 checksum:
   name_template: 'checksums.txt'
 snapshot:
