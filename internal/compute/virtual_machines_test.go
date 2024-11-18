@@ -4,6 +4,7 @@ import (
 	"github.com/NETWAYS/check_cloud_azure/internal/compute"
 	"github.com/jarcoal/httpmock"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"testing"
 )
 
@@ -21,10 +22,10 @@ func TestVirtualMachines(t *testing.T) {
 		newJsonFileResponder("./testdata/vmByName-deallocated.json"))
 
 	running, err := c.LoadVmByName("test-group", "test-vm")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	deallocated, err := c.LoadVmByName("test-group", "test-vm2")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	vms := compute.VirtualMachines{}
 
