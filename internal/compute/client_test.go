@@ -11,6 +11,7 @@ import (
 	"github.com/NETWAYS/check_cloud_azure/internal/compute"
 	"github.com/jarcoal/httpmock"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 var (
@@ -86,7 +87,7 @@ func TestClient_LoadVmByName(t *testing.T) {
 		newJsonFileResponder("./testdata/vmByName.json"))
 
 	vm, err := c.LoadVmByName("test-group", "test-vm")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, "test-vm", *vm.VirtualMachine.Name)
 }
 
@@ -99,7 +100,7 @@ func TestClient_LoadResourceGroup(t *testing.T) {
 		newJsonFileResponder("./testdata/resourceGroup.json"))
 
 	r, err := c.LoadResourceGroup("test-group")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, "test-group", *r.Name)
 }
 
@@ -112,7 +113,7 @@ func TestClient_LoadResourceGroupsByFilter(t *testing.T) {
 		newJsonFileResponder("./testdata/resourceGroups.json"))
 
 	groups, err := c.LoadResourceGroupsByFilter("Abteilung", "Development")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Len(t, groups, 1)
 	assert.Equal(t, "test-group", *groups[0].Name)
 
@@ -121,7 +122,7 @@ func TestClient_LoadResourceGroupsByFilter(t *testing.T) {
 		newJsonFileResponder("./testdata/resourceGroups.json"))
 
 	groups, err = c.LoadResourceGroupsByFilter("", "")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Len(t, groups, 1)
 	assert.Equal(t, "test-group", *groups[0].Name)
 }
@@ -143,7 +144,7 @@ func TestClient_LoadVmsByResourceGroup(t *testing.T) {
 		newJsonFileResponder("./testdata/vmByName2.json"))
 
 	vms, err := c.LoadVmsByResourceGroup("test-group")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Len(t, vms.VirtualMachines, 2)
 	assert.Equal(t, "test-vm", *vms.VirtualMachines[0].VirtualMachine.Name)
 	assert.Equal(t, "test-vm2", *vms.VirtualMachines[1].VirtualMachine.Name)
