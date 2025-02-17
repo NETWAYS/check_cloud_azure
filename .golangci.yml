@@ -1,18 +1,5 @@
-run:
-  deadline: 1m
-
 linters:
   disable-all: false
-  enable:
-    - funlen
-    - dogsled
-    - dupl
-    # - lll
-    - whitespace
-    - wsl
-    - exportloopref
-  disable:
-    - scopelint
   presets:
     - bugs
     - unused
