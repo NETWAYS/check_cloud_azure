@@ -54,8 +54,8 @@ func testClientWithMock() (client *compute.Client, cleanup func()) {
 	client = compute.NewClient(AzureAuthorizer, AzureSubscriptionId)
 
 	// Reconfigure clients to use a basic http.Client implementation
-	allowMocking(&client.GetVMClient().BaseClient.Client)
-	allowMocking(&client.GetGroupClient().BaseClient.Client)
+	allowMocking(&client.GetVMClient().BaseClient.Client)    // nolint:staticcheck
+	allowMocking(&client.GetGroupClient().BaseClient.Client) // nolint:staticcheck
 
 	httpmock.Activate()
 	cleanup = httpmock.DeactivateAndReset
