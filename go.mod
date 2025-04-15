@@ -1,7 +1,6 @@
 module github.com/NETWAYS/check_cloud_azure
 
-go 1.21
-toolchain go1.24.1
+go 1.24
 
 require (
 	github.com/Azure/azure-sdk-for-go v63.3.0+incompatible
